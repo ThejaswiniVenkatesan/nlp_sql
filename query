@@ -1,0 +1,54 @@
+[
+  {
+    "instruction": "Total no of machines offline in cell 1 today",
+    "output": "SELECT COUNT(*) FROM PasP40Asset WHERE P40_Machine_Status = 'Offline' AND P40_Site_Id = 1 AND DATE(P40_Updated_Date) = CURDATE();"
+  },
+  {
+    "instruction": "Total no of machines active in cell 1 today",
+    "output": "SELECT COUNT(*) FROM PasP40Asset WHERE P40_Machine_Status = 'Active' AND P40_Site_Id = 1 AND DATE(P40_Updated_Date) = CURDATE();"
+  },
+  {
+    "instruction": "Total no of machines idle in cell 1 today",
+    "output": "SELECT COUNT(*) FROM PasP40Asset WHERE P40_Machine_Status = 'Idle' AND P40_Site_Id = 1 AND DATE(P40_Updated_Date) = CURDATE();"
+  },
+  {
+    "instruction": "Machine with the highest downtime",
+    "output": "SELECT P40_Asset_Id, SUM(P40_Duration) AS Total_Downtime FROM PasP40Downtime GROUP BY P40_Asset_Id ORDER BY Total_Downtime DESC LIMIT 1;"
+  },
+  {
+    "instruction": "Machine with the highest downtime in cell 2",
+    "output": "SELECT d.P40_Asset_Id, SUM(d.P40_Duration) AS Total_Downtime FROM PasP40Downtime d JOIN PasP40Asset a ON d.P40_Asset_Id = a.P40_Asset_Id WHERE a.P40_Site_Id = 2 GROUP BY d.P40_Asset_Id ORDER BY Total_Downtime DESC LIMIT 1;"
+  },
+  {
+    "instruction": "What is the total downtime of C-12 machine this month",
+    "output": "SELECT SUM(P40_Duration) FROM PasP40Downtime WHERE P40_Asset_Id = 'C-12' AND MONTH(P40_Date) = MONTH(CURDATE()) AND YEAR(P40_Date) = YEAR(CURDATE());"
+  },
+  {
+    "instruction": "Machine with the most breakdown this month",
+    "output": "SELECT P40_Asset_Id, COUNT(*) AS BreakdownCount FROM PasP40Downtime WHERE MONTH(P40_Date) = MONTH(CURDATE()) AND YEAR(P40_Date) = YEAR(CURDATE()) GROUP BY P40_Asset_Id ORDER BY BreakdownCount DESC LIMIT 1;"
+  },
+  {
+    "instruction": "Total production of part no B 11458 in V-12 machine this month",
+    "output": "SELECT SUM(P40_Produced_Quantity) FROM PasP40ProductionSchedule WHERE P40_Part_Id = 'B11458' AND P40_Asset_Id = 'V-12' AND MONTH(P40_Schedule_Date) = MONTH(CURDATE());"
+  },
+  {
+    "instruction": "Total active time of C-12 machine yesterday shift 1",
+    "output": "SELECT SUM(P40_Active_Time) FROM PasP40OEELive WHERE P40_Asset_Id = 'C-12' AND DATE(P40_Date) = CURDATE() - INTERVAL 1 DAY AND P40_Shift = 1;"
+  },
+  {
+    "instruction": "OEE percentage of v-12 machine from 2-06-25 to 08-06-25",
+    "output": "SELECT AVG(P40_OEE) FROM PasP40OEELive WHERE P40_Asset_Id = 'V-12' AND P40_Date BETWEEN '2025-06-02' AND '2025-06-08';"
+  },
+  {
+    "instruction": "All users with superuser role",
+    "output": "SELECT u.* FROM PasP40User u JOIN PasP40UserRoleRel ur ON u.P40_User_Id = ur.P40_User_Id JOIN PasP40Role r ON ur.P40_Role_Id = r.P40_Role_Id WHERE r.P40_Role_Name = 'Superuser';"
+  },
+  {
+    "instruction": "Assets which have been scrapped",
+    "output": "SELECT * FROM PasP40Asset WHERE P40_Is_Active = 0;"
+  },
+  {
+    "instruction": "All currently running part and operation",
+    "output": "SELECT DISTINCT p.P40_Part_Id, o.P40_Operation_Id FROM PasP40AssetOperationRel r JOIN PasP40Part p ON r.P40_Part_Id = p.P40_Part_Id JOIN PasP40Operation o ON r.P40_Operation_Id = o.P40_Operation_Id WHERE r.P40_Is_Active = 1;"
+  }
+]
